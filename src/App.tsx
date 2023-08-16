@@ -1,34 +1,36 @@
 import "bootstrap/dist/css/bootstrap.min.css"
 import { Route, Routes, Navigate } from "react-router-dom"
 import { Container } from "react-bootstrap"
-import { NewNote } from "./NewNote"
+import { NewCar } from "./NewCar"
 import { useLocalStorage } from "./useLocalStorage"
 import { useMemo } from "react"
 import {v4 as uuidV4 } from "uuid"
-import { NoteList } from "./NoteList"
-import { NoteLayout } from "./NoteLayout"
-import { Note } from "./Note"
-import { EditNote } from "./EditNote"
+import { CarList } from "./CarList"
+import { CarLayout } from "./CarLayout"
+import { Car } from "./Car"
+import { EditCar } from "./EditCar"
 
-export type Note = {
+export type Car = {
   id: string
 
-} & NoteData
+} & CarData
 
-export type RawNote = {
+export type RawCar = {
   id: string
 
-} & RawNoteData
+} & RawCarData
 
-export type RawNoteData = {
+export type RawCarData = {
   title: string
   markdown: string
+  year: string
   tagIds: string[]
 }
 
-export type NoteData = {
+export type CarData = {
   title: string
   markdown: string
+  year: string
   tags: Tag[]
 }
 
@@ -38,36 +40,36 @@ export type Tag = {
 }
 
 function App() {
-  const [notes, setNotes] = useLocalStorage<RawNote[]>("NOTES", [])
+  const [notes, setCars] = useLocalStorage<RawCar[]>("NOTES", [])
   const [tags, setTags] = useLocalStorage<Tag[]>("TAGS", [])
 
   const notesWithTags = useMemo(() => {
-    return notes.map(note => {
-      return { ...note, tags: tags.filter(tag => note.tagIds.includes(tag.id))}
+    return notes.map(car => {
+      return { ...car, tags: tags.filter(tag => car.tagIds.includes(tag.id))}
     })
   }, [notes, tags] )
 
-  function onCreateNote({ tags, ...data }: NoteData) {
-    setNotes(prevNotes => {
-      return [...prevNotes, { ...data, id: uuidV4(), tagIds: tags.map(tag => tag.id)},
+  function onCreateCar({ tags, ...data }: CarData) {
+    setCars(prevCars => {
+      return [...prevCars, { ...data, id: uuidV4(), tagIds: tags.map(tag => tag.id)},
       ]
     })
   }
 
-  function onDeleteNote(id: string) {
-    setNotes(prevNotes => {
-      return prevNotes.filter(note => note.id !== id)
+  function onDeleteCar(id: string) {
+    setCars(prevCars => {
+      return prevCars.filter(car => car.id !== id)
     })
   }
 
-  function onUpdateNote(id: string, {tags, ...data}:
-    NoteData ) {
-      setNotes(prevNotes => {
-        return prevNotes.map(note => {
-          if (note.id === id) {
-            return { ...note, ...data, tagIds: tags.map(tag => tag.id)}
+  function onUpdateCar(id: string, {tags, ...data}:
+    CarData ) {
+      setCars(prevCars => {
+        return prevCars.map(car => {
+          if (car.id === id) {
+            return { ...car, ...data, tagIds: tags.map(tag => tag.id)}
           } else {
-            return note
+            return car
           }
         })
         
@@ -102,20 +104,20 @@ function App() {
   return (
     <Container className="my-4">
   <Routes>
-    <Route path="/" element={<NoteList notes={notesWithTags} availableTags={tags} 
+    <Route path="/" element={<CarList notes={notesWithTags} availableTags={tags} 
     onUpdateTag={updateTag}
     onDeleteTag={deleteTag}/>} />
-    <Route path="/new" element={<NewNote
-    onSubmit={onCreateNote} 
+    <Route path="/new" element={<NewCar
+    onSubmit={onCreateCar} 
     onAddTag={addTag} 
     availableTags={tags}  
     />
     } 
     />
-    <Route path="/:id" element={<NoteLayout notes={notesWithTags} />}>
-      <Route index element={<Note onDelete={onDeleteNote} />} />
-      <Route path="edit" element={<EditNote 
-      onSubmit={onUpdateNote} 
+    <Route path="/:id" element={<CarLayout notes={notesWithTags} />}>
+      <Route index element={<Car onDelete={onDeleteCar} />} />
+      <Route path="edit" element={<EditCar 
+      onSubmit={onUpdateCar} 
       onAddTag={addTag} 
       availableTags={tags}  
       />

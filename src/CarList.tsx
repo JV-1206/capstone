@@ -3,18 +3,18 @@ import { Button, Col, Row, Stack, Form, Card, Badge, Modal } from "react-bootstr
 import { Link } from "react-router-dom" 
 import ReactSelect from "react-select"
 import { Tag } from "./App"
-import styles from "./NotesList.module.css"
+import styles from "./CarList.module.css"
 
 
-type SimplifiedNote = {
+type SimplifiedCar = {
     tags: Tag[]
     title: string 
     id: string
 }
 
-type NoteListProps = {
+type CarListProps = {
     availableTags: Tag[]
-    notes: SimplifiedNote[]
+    notes: SimplifiedCar[]
     onDeleteTag: (id: string) => void
     onUpdateTag: (id: string, label: string) => void
 }
@@ -28,19 +28,19 @@ type EditTagsModalProps = {
 }
 
 
-export function NoteList({availableTags, notes, onUpdateTag, onDeleteTag}: NoteListProps) {
+export function CarList({availableTags, notes, onUpdateTag, onDeleteTag}: CarListProps) {
     const [selectedTags, setSelectedTags] = useState<Tag[]>([])
     const [title, setTitle] = useState("")
     const [EditTagsModalIsOpen, setEditTagsModalIsOpen] =
     useState(false)
 
-    const filteredNotes = useMemo(() => {
-        return notes.filter(note => {
+    const filteredCars = useMemo(() => {
+        return notes.filter(car => {
             return (
-                (title === "" || note.title.toLowerCase().includes(title.toLowerCase())) && 
+                (title === "" || car.title.toLowerCase().includes(title.toLowerCase())) && 
             (selectedTags.length === 0 ||
                 selectedTags.every(tag =>
-                    note.tags.some(noteTag => noteTag.id === tag.id)
+                    car.tags.some(noteTag => noteTag.id === tag.id)
                     ))
             )
         })
@@ -51,7 +51,7 @@ export function NoteList({availableTags, notes, onUpdateTag, onDeleteTag}: NoteL
     <>
     <Row className="align-items-center mb-4">
         <Col>
-        <h1>Notes</h1>
+        <h1>Customer Track</h1>
         </Col>
         <Col xs="auto">
             <Stack gap={2} direction="horizontal">
@@ -67,7 +67,7 @@ export function NoteList({availableTags, notes, onUpdateTag, onDeleteTag}: NoteL
         <Row className="mb-4">
             <Col>
             <Form.Group controlId="Title">
-                <Form.Label>Title</Form.Label>
+                <Form.Label>Customer</Form.Label>
                 <Form.Control type="text" value={title} 
                 onChange={e => setTitle(e.target.value)} />
             </Form.Group>
@@ -96,9 +96,9 @@ export function NoteList({availableTags, notes, onUpdateTag, onDeleteTag}: NoteL
         </Row>
     </Form>
     <Row xs={1} sm={2} lg={3} xl={4} className="g-3" >
-        {filteredNotes.map(note => (
-            <Col key={note.id}>
-                <NoteCard id={note.id} title={note.title} tags={note.tags} />
+        {filteredCars.map(car => (
+            <Col key={car.id}>
+                <CarCard id={car.id} title={car.title} tags={car.tags} />
             </Col>
         ))}
 
@@ -114,7 +114,7 @@ export function NoteList({availableTags, notes, onUpdateTag, onDeleteTag}: NoteL
  )
 }
 
-function NoteCard({ id, title, tags }: SimplifiedNote) {
+function CarCard({ id, title, tags }: SimplifiedCar) {
     return <Card as={Link} to={`/${id}`} className={`h-100 text-reset
     text-decoration-none ${styles.card}`} >
         <Card.Body>
